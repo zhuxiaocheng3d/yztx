@@ -69,7 +69,12 @@ function extractSortNumber(folderName) {
 }
 
 function cleanFolderTitle(folderName) {
-  return folderName.replace(/\(\d+\)/g, '').trim();
+  let cleaned = folderName;
+  cleaned = cleaned.replace(/\([^)]*\)/g, '');
+  cleaned = cleaned.replace(/\b\d{6}\b/g, '');
+  cleaned = cleaned.replace(/^\d+[\s\-_]+/, '');
+  cleaned = cleaned.replace(/[\s\-_]+/g, ' ').trim();
+  return cleaned || '未命名案例';
 }
 
 function getCaseCover(caseFolderName) {
@@ -91,6 +96,42 @@ function getCaseCover(caseFolderName) {
 function getRandomColor() {
   const colors = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#06B6D4'];
   return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function extractDateFromFolderName(folderName) {
+  const match = folderName.match(/(\d{6})/);
+  if (!match) return null;
+  const num = match[1];
+  const year = 2000 + parseInt(num.slice(0, 2), 10);
+  const month = parseInt(num.slice(2, 4), 10);
+  const day = parseInt(num.slice(4, 6), 10);
+  if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+    return `${year}.${month.toString().padStart(2, '0')}.${day.toString().padStart(2, '0')}`;
+  }
+  return null;
+}
+
+function extractTagFromFolderName(folderName) {
+  const regex = /\(([^)]+)\)/g;
+  let match;
+  let tags = [];
+  while ((match = regex.exec(folderName)) !== null) {
+    const inner = match[1].trim();
+    if (inner !== '' && !/^\d+$/.test(inner)) {
+      tags.push(inner);
+    }
+  }
+  if (tags.length === 0) return null;
+  return tags[0];
+}
+
+function getCaseLabel(folderName) {
+  const dateStr = extractDateFromFolderName(folderName);
+  const tag = extractTagFromFolderName(folderName);
+  if (!dateStr && !tag) return null;
+  if (dateStr && tag) return `${dateStr} ${tag}`;
+  if (dateStr) return dateStr;
+  return tag;
 }
 
 function parseBannerFromIndexSm() {
@@ -194,14 +235,14 @@ function generateTeamPageFromSm() {
 .team-header h1 { font-size: 2.2rem; font-weight: 600; margin-bottom: 16px; }
 .team-header p { font-size: 1.1rem; color: #555; max-width: 700px; margin: 0 auto; }
 .team-grid-detail { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 40px; margin-bottom: 60px; }
-.team-card-detail { text-align: center; background: #fff; padding: 28px 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s; }
+.team-card-detail { text-align: center; background: transparent; padding: 28px 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s; }
 .team-card-detail:hover { transform: translateY(-5px); }
 .team-avatar-detail { width: 120px; height: 120px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; background: #f5f5f5; display: flex; align-items: center; justify-content: center; }
 .team-avatar-detail img { width: 100%; height: 100%; object-fit: cover; }
 .team-name-detail { font-size: 1.25rem; font-weight: 600; margin-bottom: 6px; }
 .team-role-detail { color: #888; font-size: 0.85rem; margin-bottom: 10px; }
 .team-desc-detail { font-size: 0.9rem; color: #555; }
-.contact-section { background: #f8f8f8; padding: 40px; text-align: center; border-radius: 16px; margin-top: 20px; }
+.contact-section { background: transparent; padding: 40px; text-align: center; border-radius: 16px; margin-top: 20px; }
 .contact-section h3 { font-size: 1.5rem; margin-bottom: 20px; }
 .contact-section p { font-size: 1rem; line-height: 1.6; }
 @media (max-width: 640px) { .team-grid-detail { gap: 24px; } }
@@ -231,30 +272,96 @@ function getFooter() {
   return `<footer><p>${COPYRIGHT}</p></footer>`;
 }
 
-// 注意：以下两个函数仅用于首次生成默认样式，后续构建不会再覆盖
 function getDefaultStyle() {
-  return `/* 艺展天下 - 默认样式（您可以自由修改此文件，不会被构建覆盖） */
+  return `/* 艺展天下 - 统一背景色，所有容器透明 */
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1a1a1a; line-height: 1.5; }
+body { 
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+  background-color: #ffffff;  /* 在此修改全局背景色，透明PNG将透出此颜色 */
+  color: #1a1a1a; 
+  line-height: 1.5; 
+}
 .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; background-color: #ffffff; }
+header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 20px 32px; 
+  background-color: transparent;
+}
 .logo a { display: inline-flex; align-items: center; text-decoration: none; }
 .logo img { height: 44px; width: auto; vertical-align: middle; display: block; }
 nav { display: flex; gap: 32px; }
-nav a { text-decoration: none; color: #555; font-weight: 500; font-size: 1rem; padding: 6px 12px; border-radius: 30px; transition: background-color 0.2s, color 0.2s; }
-nav a:hover { background-color: #f0f0f0; color: #000; }
+nav a { 
+  text-decoration: none; 
+  color: #555; 
+  font-weight: 500; 
+  font-size: 1rem; 
+  padding: 6px 12px; 
+  border-radius: 30px; 
+  transition: background-color 0.2s, color 0.2s; 
+}
+nav a:hover { background-color: rgba(0,0,0,0.05); color: #000; }
 nav a.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; background-color: transparent; }
-.text-banner { background-color: #ffffff; padding: 60px 24px; text-align: center; }
+.text-banner { background-color: transparent; padding: 60px 24px; text-align: center; }
 .banner-chinese { font-size: 2.5rem; font-weight: 700; color: #111; margin-bottom: 16px; letter-spacing: 2px; }
 .banner-english-medium { font-size: 1.5rem; font-weight: 500; color: #333; margin-bottom: 24px; }
 .banner-small-text { font-size: 0.75rem; color: #666; max-width: 800px; margin: 0 auto; line-height: 1.6; }
 .section { padding: 64px 0; }
 .section-title { font-size: 2rem; font-weight: 600; margin-bottom: 48px; text-align: center; color: #111; }
-.case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 48px 32px; }
-.case-card { background-color: #ffffff; text-decoration: none; color: inherit; display: block; transition: transform 0.3s ease, box-shadow 0.3s ease; border-radius: 0; overflow: visible; }
-.case-card:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.1); z-index: 1; }
-.case-thumb { aspect-ratio: 4 / 3; width: 100%; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.case-thumb img, .case-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 0; }
+.case-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+  gap: 48px 32px;
+}
+.case-card {
+  background-color: transparent;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0;
+  overflow: visible;
+}
+.case-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  z-index: 1;
+}
+.case-thumb {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  background-color: transparent;  /* 透明，让透明PNG透出body背景 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.case-label {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 5px 12px;
+  border-radius: 2px;
+  z-index: 5;
+  pointer-events: none;
+  white-space: nowrap;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+.case-thumb img, .case-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0;
+}
 .case-info { padding: 4px 0 0 0; }
 .case-title { font-size: 1.2rem; font-weight: 500; color: #222; margin: 0; }
 .case-card:hover .case-title { color: #000; }
@@ -262,7 +369,8 @@ nav a.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; bac
 .team-desc-home { font-size: 1rem; color: #555; margin-bottom: 24px; }
 .btn-contact { display: inline-block; background: #000; color: #fff; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 500; transition: background 0.2s; }
 .btn-contact:hover { background: #333; }
-footer { text-align: center; padding: 32px 24px; background-color: #fafafa; color: #888; font-size: 0.85rem; }
+footer { text-align: center; padding: 32px 24px; background-color: transparent; color: #888; font-size: 0.85rem; }
+
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
   .section { padding: 48px 0; }
@@ -273,9 +381,22 @@ footer { text-align: center; padding: 32px 24px; background-color: #fafafa; colo
   .banner-chinese { font-size: 1.8rem; }
   .banner-english-medium { font-size: 1.2rem; }
   .case-grid { gap: 32px 16px; }
+  .case-info { padding-top: 4px; }
+  .case-label {
+    top: 6px;
+    right: 6px;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
 }
 @media (max-width: 480px) {
   .case-grid { grid-template-columns: 1fr; gap: 32px; }
+  .case-label {
+    white-space: nowrap;
+    font-size: 0.75rem;
+    padding: 3px 9px;
+  }
 }`;
 }
 
@@ -309,9 +430,10 @@ function generateHomePage(casesData) {
       const isVideo = isVideoFile(c.coverFile);
       coverHtml = isVideo ? `<video src="${coverPath}" muted playsinline></video>` : `<img src="${coverPath}" alt="${c.title}" loading="lazy">`;
     } else {
-      coverHtml = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;color:#999;">暂无预览</div>`;
+      coverHtml = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:transparent;color:#999;">暂无预览</div>`;
     }
-    return `<a href="/case/${c.folderName}/" class="case-card"><div class="case-thumb">${coverHtml}</div><div class="case-info"><div class="case-title">${c.title}</div></div></a>`;
+    const labelHtml = c.label ? `<div class="case-label">${escapeHtml(c.label)}</div>` : '';
+    return `<a href="/case/${c.folderName}/" class="case-card"><div class="case-thumb">${coverHtml}${labelHtml}</div><div class="case-info"><div class="case-title">${c.title}</div></div></a>`;
   }).join('');
 
   const bannerData = parseBannerFromIndexSm();
@@ -356,10 +478,9 @@ function generateHomePage(casesData) {
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>艺展天下 | 专业会展服务</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}">${deviceCheckScript}</head>
-<body>${getHeader('home')}${bannerHtml}<main><section id="cases" class="section"><div class="container"><h2 class="section-title">Our Work</h2><div class="case-grid">${casesHtml || '<p style="text-align:center; width:100%;">暂无案例，请添加 case 目录下的子文件夹及媒体文件</p>'}</div></div></section><section id="team" class="section" style="background-color: #ffffff;"><div class="container"><h2 class="section-title">About Team</h2>${teamHtml}</div></section></main>${getFooter()}</body></html>`;
+<body>${getHeader('home')}${bannerHtml}<main><section id="cases" class="section"><div class="container"><h2 class="section-title">Our Work</h2><div class="case-grid">${casesHtml || '<p style="text-align:center; width:100%;">暂无案例，请添加 case 目录下的子文件夹及媒体文件</p>'}</div></div></section><section id="team" class="section" style="background-color: transparent;"><div class="container"><h2 class="section-title">About Team</h2>${teamHtml}</div></section></main>${getFooter()}</body></html>`;
 }
 
-// ========== 案例详情页生成函数（保持不变）==========
 function formatFileSize(bytes) {
   if (bytes === 0) return '0 B';
   const k = 1024;
@@ -588,7 +709,7 @@ function generateCasePageFromSm(folderName, folderPath, filesInFolder) {
   const mainContent = showcaseHtml + remainingFilesHtml + remainingMediaHtml;
   if (mainContent === '') return null;
   return `<!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(pageTitle)} | 艺展天下案例</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/neirong-css.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"><style>body{margin:0;padding:0;background:#fff;}.case-detail{max-width:1400px;margin:0 auto;padding:24px;}.back-link{display:block;text-align:center;margin-top:40px;color:#555;text-decoration:none;}.back-link:hover{color:#000;}.text-content{width:100%;}.text-center{display:block;width:100%;text-align:center;}</style></head><body>${getHeader('case')}<div class="case-detail"><h1 style="text-align:center;">${escapeHtml(pageTitle)}</h1>${mainContent}<a href="/" class="back-link">← 返回首页</a></div>${getFooter()}</body></html>`;
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(pageTitle)} | 艺展天下案例</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/neirong-css.css"><link rel="stylesheet" href="./xiangqing.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"><style>body{margin:0;padding:0;background:transparent;}.case-detail{max-width:1400px;margin:0 auto;padding:24px;}.back-link{display:block;text-align:center;margin-top:40px;color:#555;text-decoration:none;}.back-link:hover{color:#000;}.text-content{width:100%;}.text-center{display:block;width:100%;text-align:center;}</style></head><body>${getHeader('case')}<div class="case-detail"><h1 style="text-align:center;">${escapeHtml(pageTitle)}</h1>${mainContent}<a href="/" class="back-link">← 返回首页</a></div>${getFooter()}</body></html>`;
 }
 
 function generateSimpleCasePage(folderName, mediaFiles, descText) {
@@ -599,7 +720,7 @@ function generateSimpleCasePage(folderName, mediaFiles, descText) {
   }).join('');
   const title = cleanFolderTitle(folderName);
   return `<!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title} | 艺展天下案例</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/neirong-css.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"></head><body>${getHeader('case')}<div class="case-detail"><h1 style="text-align:center;">${title}</h1>${descText ? `<p style="margin-bottom:24px;color:#555;">${descText}</p>` : ''}<div class="case-media-grid">${mediaHtml || '<p>暂无媒体文件</p>'}</div><a href="/" class="back-link">← 返回首页</a></div>${getFooter()}</body></html>`;
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title} | 艺展天下案例</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/neirong-css.css"><link rel="stylesheet" href="./xiangqing.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"><style>body{background:transparent;}</style></head><body>${getHeader('case')}<div class="case-detail"><h1 style="text-align:center;">${title}</h1>${descText ? `<p style="margin-bottom:24px;color:#555;">${descText}</p>` : ''}<div class="case-media-grid">${mediaHtml || '<p>暂无媒体文件</p>'}</div><a href="/" class="back-link">← 返回首页</a></div>${getFooter()}</body></html>`;
 }
 
 function createSampleCaseIfNeeded() {
@@ -644,7 +765,7 @@ function createSampleTeamSmIfNeeded() {
 
 联系我们
 180-3025-1013
-上海市嘉定区金沙江西路1069弄5号楼907`;
+上海市嘉定区金沙江西路1069弄5号写字楼907`;
     fs.writeFileSync(teamSmPath, defaultTeamContent);
     console.log('📝 创建团队描述文件 team/index-sm.txt');
   }
@@ -674,7 +795,8 @@ async function build() {
     }
     fs.writeFileSync(path.join(casePath, 'index.html'), caseHtml);
     const title = cleanFolderTitle(folder);
-    casesData.push({ folderName: folder, title: title, coverFile: coverFile });
+    const label = getCaseLabel(folder);
+    casesData.push({ folderName: folder, title: title, coverFile: coverFile, label: label });
   }
   
   const homeHtml = generateHomePage(casesData);
@@ -685,7 +807,6 @@ async function build() {
   fs.writeFileSync(path.join(TEAM_DIR, 'index.html'), teamHtml);
   console.log(`👥 生成团队页面 team/index.html (基于 team/index-sm.txt)`);
   
-  // 只在 CSS 文件不存在时创建默认样式，避免覆盖用户修改
   if (!fs.existsSync(OUTPUT_STYLE)) {
     fs.writeFileSync(OUTPUT_STYLE, getDefaultStyle());
     console.log(`🎨 创建默认样式文件 style.css (可自由修改，不会被覆盖)`);

@@ -1,4 +1,4 @@
-/* 详情页样式 - 纯白扁平，无阴影无边框，隐藏滚动条，紧凑间距 */
+/* 详情页样式 - 透明背景，继承 body 背景色 */
 html, body {
   margin: 0;
   padding: 0;
@@ -21,7 +21,7 @@ html {
 }
 
 body {
-  background: #ffffff;
+  background: transparent;  /* 继承父级背景 */
   color: #1a1a1a;
   line-height: 1.5;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -29,13 +29,13 @@ body {
   min-height: 100vh;
 }
 
-/* 头部与首页一致 */
+/* 头部透明 */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 32px;
-  background-color: #ffffff;
+  background-color: transparent;
 }
 .logo {
   font-size: 1.5rem;
@@ -58,11 +58,12 @@ nav a {
 nav a:hover { color: #000; }
 nav a.active { color: #000; border-bottom: 2px solid #000; }
 
-/* 详情页主体 */
+/* 详情页主体透明背景 */
 .case-detail {
   max-width: 1400px;
   margin: 0 auto;
   padding: 48px 24px;
+  background-color: transparent;
 }
 .case-detail h1 {
   font-size: 2rem;
@@ -97,7 +98,7 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
 
 /* 动态展示项 */
 .dynamic-item {
-  background: #ffffff;
+  background: transparent;
   position: relative;
   overflow: hidden;
   break-inside: avoid;
@@ -113,7 +114,7 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
   height: 100%;
   display: block;
   object-fit: cover;
-  background: #f5f5f5;
+  background: transparent;
 }
 /* 比例裁切 */
 .aspect-ratio-1-1 .dynamic-media-container { aspect-ratio: 1 / 1; }
@@ -133,17 +134,15 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
   line-height: 1.4;
   white-space: pre-wrap;
 }
-/* 居中标签样式 */
 .text-content .text-center {
   display: block;
   text-align: center;
 }
-/* 空行标签样式 */
 .text-content .text-line-break {
   margin-top: 1em;
 }
 
-/* 文件行样式 */
+/* 文件行样式 - 透明背景 */
 .dynamic-row.file-row {
   flex-wrap: wrap;
   gap: 12px;
@@ -154,7 +153,7 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
   align-items: center;
   width: 100%;
   padding: 8px 12px;
-  background: #f9f9f9;
+  background: rgba(0,0,0,0.03);
   border-radius: 4px;
 }
 .dynamic-row.file-row.single-col .dynamic-file-item { max-width: 100%; }
@@ -184,11 +183,12 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
 }
 .dynamic-download-button:hover { background: #e07a5f; }
 
-/* 文件下载区域 */
+/* 文件下载区域 - 透明背景 */
 .text-files-container {
   width: 100%;
   padding: 15px 5px;
   margin-top: 20px;
+  background-color: transparent;
 }
 .text-files-container h3 {
   font-size: 1.25rem;
@@ -206,7 +206,7 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
   align-items: center;
   width: 100%;
   padding: 8px 12px;
-  background: #f9f9f9;
+  background: rgba(0,0,0,0.03);
   border-radius: 4px;
 }
 .text-file-name {
@@ -233,11 +233,12 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
 }
 .download-button:hover { background: #e07a5f; }
 
-/* 媒体网格区域（剩余图片/视频） */
+/* 媒体网格区域（剩余图片/视频）透明背景 */
 .media-grid-container {
   width: 100%;
   padding: 15px 5px;
   margin-top: 30px;
+  background-color: transparent;
 }
 .media-grid-container h3 {
   font-size: 1.25rem;
@@ -250,7 +251,7 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
   gap: 16px;
 }
 .media-item {
-  background: #fff;
+  background: transparent;
   position: relative;
   overflow: hidden;
 }
@@ -260,9 +261,8 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
   height: 100%;
   object-fit: cover;
   display: block;
-  background: #f5f5f5;
+  background: transparent;
 }
-/* 已移除 .media-hover-button */
 
 /* 返回链接 - 居中 */
 .back-link {
@@ -275,11 +275,11 @@ nav a.active { color: #000; border-bottom: 2px solid #000; }
 }
 .back-link:hover { color: #000; }
 
-/* 底部 */
+/* 底部透明 */
 footer {
   text-align: center;
   padding: 32px 24px;
-  background-color: #fafafa;
+  background-color: transparent;
   color: #888;
   font-size: 0.85rem;
 }
