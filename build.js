@@ -1,4 +1,4 @@
-// build.js - 最终修复版（跨行居中 + 全宽居中）
+// build.js - 最终修复版（跨行居中 + 全宽居中 + Logo图片 + Favicon）
 const fs = require('fs');
 const path = require('path');
 
@@ -6,6 +6,8 @@ const path = require('path');
 const SITE_TITLE = '艺展天下';
 const COPYRIGHT = `© 2025 艺展天下会展服务有限公司 版权所有`;
 const BANNER_FILE = 'banner.jpg';
+const LOGO_IMG = '艺展天下icon.png';      // 新增：Logo 图片文件名
+const FAVICON = 'favicon.ico';            // 新增：网站图标
 
 const ROOT_DIR = __dirname;
 const CASE_DIR = path.join(ROOT_DIR, 'case');
@@ -149,9 +151,10 @@ function createTeamPageIfNeeded() {
   }
 }
 
+// 修改后的 getHeader：将文字 Logo 替换为可点击的图片 Logo
 function getHeader(navActive = 'home') {
   return `<header>
-  <div class="logo">艺展天下</div>
+  <div class="logo"><a href="/"><img src="/${LOGO_IMG}" alt="艺展天下"></a></div>
   <nav>
     <a href="/" class="${navActive === 'home' ? 'active' : ''}">Home</a>
     <a href="/#cases" class="${navActive === 'case' ? 'active' : ''}">Case</a>
@@ -166,13 +169,15 @@ function getFooter() {
 </footer>`;
 }
 
+// 修改后的全局样式：增加 .logo img 样式，使图片尺寸可控
 function getGlobalStyle() {
-  return `/* 艺展天下 - 纯白扁平风格（卡片整体放大 + 菜单底色） */
+  return `/* 艺展天下 - 纯白扁平风格（卡片整体放大 + 菜单底色 + Logo图片） */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1a1a1a; line-height: 1.5; }
 .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
 header { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; background-color: #ffffff; }
-.logo { font-size: 1.5rem; font-weight: 600; letter-spacing: 1px; color: #111; }
+.logo a { display: inline-flex; align-items: center; text-decoration: none; }
+.logo img { height: 44px; width: auto; vertical-align: middle; display: block; }
 nav { display: flex; gap: 32px; }
 nav a {
   text-decoration: none;
@@ -204,13 +209,13 @@ nav a.active {
   color: inherit;
   display: block;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 8px;  /* 可选，增加圆角更美观 */
-  overflow: hidden;    /* 保证放大时不会超出网格边界 */
+  border-radius: 8px;
+  overflow: hidden;
 }
 .case-card:hover {
   transform: scale(1.02);
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  z-index: 1;          /* 确保放大后在其他卡片之上 */
+  z-index: 1;
 }
 .case-thumb {
   aspect-ratio: 4 / 3;
@@ -219,7 +224,6 @@ nav a.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 移除 overflow: hidden，避免裁剪 */
   overflow: visible;
 }
 .case-thumb img, .case-thumb video {
@@ -227,7 +231,6 @@ nav a.active {
   height: 100%;
   object-fit: cover;
   display: block;
-  /* 移除图片单独的过渡和缩放 */
 }
 .case-info { padding: 20px 0 0 0; }
 .case-title { font-size: 1.2rem; font-weight: 500; color: #222; transition: color 0.2s; }
@@ -247,13 +250,15 @@ footer { text-align: center; padding: 32px 24px; background-color: #fafafa; colo
   header { flex-direction: column; gap: 12px; padding: 16px; }
   nav { gap: 24px; }
   nav a { padding: 4px 8px; }
-  .case-card:hover { transform: scale(1.01); }  /* 手机上轻微放大 */
+  .case-card:hover { transform: scale(1.01); }
+  .logo img { height: 36px; }
 }
 @media (max-width: 480px) {
   .case-grid, .team-grid { grid-template-columns: 1fr; }
 }`;
 }
 
+// 首页生成：增加 favicon 链接
 function generateHomePage(casesData) {
   const casesHtml = casesData.map(c => {
     let coverHtml = '';
@@ -283,7 +288,7 @@ function generateHomePage(casesData) {
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>艺展天下 | 专业会展服务</title><link rel="stylesheet" href="/style.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>艺展天下 | 专业会展服务</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"></head>
 <body>${getHeader('home')}<div class="banner"><img src="/${BANNER_FILE}" alt="艺展天下 banner"></div><main><section id="cases" class="section"><div class="container"><h2 class="section-title">Our Work</h2><div class="case-grid">${casesHtml || '<p style="text-align:center; width:100%;">暂无案例，请添加 case 目录下的子文件夹及媒体文件</p>'}</div></div></section><section id="team" class="section" style="background-color: #ffffff;"><div class="container"><h2 class="section-title">核心团队</h2>${teamHtml}</div></section></main>${getFooter()}</body></html>`;
 }
 
@@ -537,6 +542,7 @@ function renderRemainingMediaGrid(filesNotInShowcase) {
   return html;
 }
 
+// 修改：案例页增加 style.css 引用和 favicon
 function generateCasePageFromSm(folderName, folderPath, filesInFolder) {
   const smPath = path.join(folderPath, 'index-sm.txt');
   let smContent = '';
@@ -573,7 +579,9 @@ function generateCasePageFromSm(folderName, folderPath, filesInFolder) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(pageTitle)} | 艺展天下案例</title>
+  <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/neirong-css.css">
+  <link rel="icon" type="image/x-icon" href="/${FAVICON}">
   <style>
     body { margin: 0; padding: 0; background: #fff; }
     .case-detail { max-width: 1400px; margin: 0 auto; padding: 24px; }
@@ -605,6 +613,7 @@ function generateCasePageFromSm(folderName, folderPath, filesInFolder) {
 </html>`;
 }
 
+// 修改：简易案例页同样增加 style.css 和 favicon
 function generateSimpleCasePage(folderName, mediaFiles, descText) {
   const mediaHtml = mediaFiles.map(file => {
     const filePath = `./${file}`;
@@ -616,14 +625,15 @@ function generateSimpleCasePage(folderName, mediaFiles, descText) {
   const title = folderName.replace(/^case\d+_/, '').replace(/_/g, ' ');
   return `<!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title} | 艺展天下案例</title><link rel="stylesheet" href="/neirong-css.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title} | 艺展天下案例</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/neirong-css.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"></head>
 <body>${getHeader('case')}<div class="case-detail"><h1 style="text-align: center;">${title}</h1>${descText ? `<p style="margin-bottom:24px;color:#555;">${descText}</p>` : ''}<div class="case-media-grid">${mediaHtml || '<p>暂无媒体文件</p>'}</div><a href="/" class="back-link">← 返回首页</a></div>${getFooter()}</body></html>`;
 }
 
+// 修改：团队页增加 favicon
 function generateTeamPage() {
   return `<!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>关于我们 | 艺展天下团队</title><link rel="stylesheet" href="/style.css"><style>.team-detail{max-width:1000px;margin:0 auto;padding:48px 24px;}.team-intro{text-align:center;margin-bottom:48px;}.team-intro p{font-size:1.1rem;color:#555;max-width:700px;margin:16px auto 0;}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>关于我们 | 艺展天下团队</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"><style>.team-detail{max-width:1000px;margin:0 auto;padding:48px 24px;}.team-intro{text-align:center;margin-bottom:48px;}.team-intro p{font-size:1.1rem;color:#555;max-width:700px;margin:16px auto 0;}</style></head>
 <body>${getHeader('about')}<div class="team-detail"><div class="team-intro"><h1>我们的团队</h1><p>专业、创新、极致 —— 艺展天下汇聚行业顶尖人才，为每一次展会注入灵魂。</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:40px;">${['陈思远','李美琳','王知行','赵雅欣'].map((n,i)=>`<div style="text-align:center;background:#fff;padding:28px;"><div style="width:140px;height:140px;border-radius:50%;margin:0 auto 20px;overflow:hidden;background:#f0f0f0;"><img src="/team/avatar_${i+1}.svg" style="width:100%;height:100%;object-fit:cover;"></div><h3 style="font-size:1.25rem;">${n}</h3><p style="color:#888;margin:6px 0 12px;">${['创意总监','设计主管','技术顾问','运营经理'][i]}</p><p style="font-size:0.9rem;color:#555;">${['15年会展策划经验','红点设计奖得主','互动多媒体专家','精细化流程管理'][i]}</p></div>`).join('')}</div><div style="margin-top:64px;padding:32px;background:#f8f8f8;text-align:center;"><h3 style="margin-bottom:16px;">联系我们</h3><p>📧 yizhan@example.com &nbsp;&nbsp; 📞 400-882-6688</p><p style="margin-top:12px;font-size:0.85rem;">北京市朝阳区艺术园区88号艺展大厦</p></div></div>${getFooter()}</body></html>`;
 }
 
@@ -681,6 +691,8 @@ async function build() {
   console.log('   ├── style.css (首页样式)');
   console.log('   ├── neirong-css.css (详情页样式，需手动放置)');
   console.log('   ├── banner.jpg');
+  console.log('   ├── 艺展天下icon.png (Logo图片)');
+  console.log('   ├── favicon.ico (网站图标)');
   console.log('   ├── case/ (每个子目录包含独立案例页，可使用index-sm.txt自定义布局)');
   console.log('   ├── team/index.html');
   console.log('   └── index-sm.txt');

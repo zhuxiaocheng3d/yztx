@@ -1,9 +1,10 @@
-/* 艺展天下 - 纯白扁平风格（卡片整体放大 + 菜单底色） */
+/* 艺展天下 - 纯白扁平风格（卡片整体放大 + 菜单底色 + Logo图片） */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1a1a1a; line-height: 1.5; }
 .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
 header { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; background-color: #ffffff; }
-.logo { font-size: 1.5rem; font-weight: 600; letter-spacing: 1px; color: #111; }
+.logo a { display: inline-flex; align-items: center; text-decoration: none; }
+.logo img { height: 44px; width: auto; vertical-align: middle; display: block; }
 nav { display: flex; gap: 32px; }
 nav a {
   text-decoration: none;
@@ -35,13 +36,13 @@ nav a.active {
   color: inherit;
   display: block;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 8px;  /* 可选，增加圆角更美观 */
-  overflow: hidden;    /* 保证放大时不会超出网格边界 */
+  border-radius: 8px;
+  overflow: hidden;
 }
 .case-card:hover {
   transform: scale(1.02);
   box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  z-index: 1;          /* 确保放大后在其他卡片之上 */
+  z-index: 1;
 }
 .case-thumb {
   aspect-ratio: 4 / 3;
@@ -50,7 +51,6 @@ nav a.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 移除 overflow: hidden，避免裁剪 */
   overflow: visible;
 }
 .case-thumb img, .case-thumb video {
@@ -58,7 +58,6 @@ nav a.active {
   height: 100%;
   object-fit: cover;
   display: block;
-  /* 移除图片单独的过渡和缩放 */
 }
 .case-info { padding: 20px 0 0 0; }
 .case-title { font-size: 1.2rem; font-weight: 500; color: #222; transition: color 0.2s; }
@@ -78,7 +77,8 @@ footer { text-align: center; padding: 32px 24px; background-color: #fafafa; colo
   header { flex-direction: column; gap: 12px; padding: 16px; }
   nav { gap: 24px; }
   nav a { padding: 4px 8px; }
-  .case-card:hover { transform: scale(1.01); }  /* 手机上轻微放大 */
+  .case-card:hover { transform: scale(1.01); }
+  .logo img { height: 36px; }
 }
 @media (max-width: 480px) {
   .case-grid, .team-grid { grid-template-columns: 1fr; }
