@@ -2,17 +2,20 @@
 艺展天下
 
 【横幅】
-banner.jpg
+专注展览搭建十余年   直属工厂搭建设计一站式服务
+Focusing on exhibitions for ten years
+We have direct factories in major cities across the country and can provide on-site setup services. We focus deeply on design, integrating creativity with corporate products and brand image to effectively spread brand value and product strengths.
+
 
 【案例】
+Our Work
 “自动加载根目录下的case文件夹和子文件夹里的所有图片和视频，4比3的比例展示，铺满屏幕根据页面宽度动态调整每行展示数量，每个图片都能超链接到对应文件夹里的各自的html案例页，”
 [keys]
 
 【团队】
+About Team
 “这里用来介绍团队，有图有文字，”
-全球展览搭建服务商，专注展览十余年，联系我们，获得专属免费设计首稿和报价，
-联系我们，免费
-
+全球展览搭建服务商，专注展览十余年，联系我们，获得专属免费设计首稿和报价。
 
 【底部版权】
 © 2025 艺展天下会展服务有限公司 版权所有

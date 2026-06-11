@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>关于我们 | 艺展天下团队</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/favicon.ico"><style>.team-detail{max-width:1000px;margin:0 auto;padding:48px 24px;}.team-intro{text-align:center;margin-bottom:48px;}.team-intro p{font-size:1.1rem;color:#555;max-width:700px;margin:16px auto 0;}</style></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>关于我们 | 我们的团队</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/favicon.ico"><style>
+.team-detail-page { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+.team-header { text-align: center; margin-bottom: 48px; }
+.team-header h1 { font-size: 2.2rem; font-weight: 600; margin-bottom: 16px; }
+.team-header p { font-size: 1.1rem; color: #555; max-width: 700px; margin: 0 auto; }
+.team-grid-detail { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 40px; margin-bottom: 60px; }
+.team-card-detail { text-align: center; background: #fff; padding: 28px 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.2s; }
+.team-card-detail:hover { transform: translateY(-5px); }
+.team-avatar-detail { width: 120px; height: 120px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; background: #f5f5f5; display: flex; align-items: center; justify-content: center; }
+.team-avatar-detail img { width: 100%; height: 100%; object-fit: cover; }
+.team-name-detail { font-size: 1.25rem; font-weight: 600; margin-bottom: 6px; }
+.team-role-detail { color: #888; font-size: 0.85rem; margin-bottom: 10px; }
+.team-desc-detail { font-size: 0.9rem; color: #555; }
+.contact-section { background: #f8f8f8; padding: 40px; text-align: center; border-radius: 16px; margin-top: 20px; }
+.contact-section h3 { font-size: 1.5rem; margin-bottom: 20px; }
+.contact-section p { font-size: 1rem; line-height: 1.6; }
+@media (max-width: 640px) { .team-grid-detail { gap: 24px; } }
+</style></head>
 <body><header>
   <div class="logo"><a href="/"><img src="/艺展天下icon.png" alt="艺展天下"></a></div>
   <nav>
@@ -8,6 +25,19 @@
     <a href="/#cases" class="">Case</a>
     <a href="/team/" class="active">About</a>
   </nav>
-</header><div class="team-detail"><div class="team-intro"><h1>我们的团队</h1><p>专业、创新、极致 —— 艺展天下汇聚行业顶尖人才，为每一次展会注入灵魂。</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:40px;"><div style="text-align:center;background:#fff;padding:28px;"><div style="width:140px;height:140px;border-radius:50%;margin:0 auto 20px;overflow:hidden;background:#f0f0f0;"><img src="/team/avatar_1.svg" style="width:100%;height:100%;object-fit:cover;"></div><h3 style="font-size:1.25rem;">陈思远</h3><p style="color:#888;margin:6px 0 12px;">创意总监</p><p style="font-size:0.9rem;color:#555;">15年会展策划经验</p></div><div style="text-align:center;background:#fff;padding:28px;"><div style="width:140px;height:140px;border-radius:50%;margin:0 auto 20px;overflow:hidden;background:#f0f0f0;"><img src="/team/avatar_2.svg" style="width:100%;height:100%;object-fit:cover;"></div><h3 style="font-size:1.25rem;">李美琳</h3><p style="color:#888;margin:6px 0 12px;">设计主管</p><p style="font-size:0.9rem;color:#555;">红点设计奖得主</p></div><div style="text-align:center;background:#fff;padding:28px;"><div style="width:140px;height:140px;border-radius:50%;margin:0 auto 20px;overflow:hidden;background:#f0f0f0;"><img src="/team/avatar_3.svg" style="width:100%;height:100%;object-fit:cover;"></div><h3 style="font-size:1.25rem;">王知行</h3><p style="color:#888;margin:6px 0 12px;">技术顾问</p><p style="font-size:0.9rem;color:#555;">互动多媒体专家</p></div><div style="text-align:center;background:#fff;padding:28px;"><div style="width:140px;height:140px;border-radius:50%;margin:0 auto 20px;overflow:hidden;background:#f0f0f0;"><img src="/team/avatar_4.svg" style="width:100%;height:100%;object-fit:cover;"></div><h3 style="font-size:1.25rem;">赵雅欣</h3><p style="color:#888;margin:6px 0 12px;">运营经理</p><p style="font-size:0.9rem;color:#555;">精细化流程管理</p></div></div><div style="margin-top:64px;padding:32px;background:#f8f8f8;text-align:center;"><h3 style="margin-bottom:16px;">联系我们</h3><p>📧 yizhan@example.com &nbsp;&nbsp; 📞 400-882-6688</p><p style="margin-top:12px;font-size:0.85rem;">北京市朝阳区艺术园区88号艺展大厦</p></div></div><footer>
-  <p>© 2025 艺展天下会展服务有限公司 版权所有</p>
-</footer></body></html>
+</header><div class="team-detail-page"><div class="team-header"><h1>我们的团队</h1><p>专业、创新、极致——艺展天下汇聚行业顶尖人才，为每一次展会注入灵魂。</p></div><div class="team-grid-detail"><div class="team-card-detail">
+      <div class="team-avatar-detail"><img src="data:image/svg+xml;utf8,%3Csvg%20width%3D%22140%22%20height%3D%22140%22%20viewBox%3D%220%200%20140%20140%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%2270%22%20cy%3D%2270%22%20r%3D%2270%22%20fill%3D%22%23F59E0B%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2270%22%20y%3D%2295%22%20font-size%3D%2260%22%20font-family%3D%22Arial%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%3E%E6%9C%B1%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="朱小橙"></div>
+      <div class="team-name-detail">朱小橙</div>
+      <div class="team-role-detail">创意总监</div>
+      <div class="team-desc-detail">10年策展经验</div>
+    </div><div class="team-card-detail">
+      <div class="team-avatar-detail"><img src="data:image/svg+xml;utf8,%3Csvg%20width%3D%22140%22%20height%3D%22140%22%20viewBox%3D%220%200%20140%20140%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%2270%22%20cy%3D%2270%22%20r%3D%2270%22%20fill%3D%22%23EF4444%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2270%22%20y%3D%2295%22%20font-size%3D%2260%22%20font-family%3D%22Arial%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%3E%E8%A9%B9%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="詹美英"></div>
+      <div class="team-name-detail">詹美英</div>
+      <div class="team-role-detail">运营经理</div>
+      <div class="team-desc-detail">精细化流畅管理</div>
+    </div><div class="team-card-detail">
+      <div class="team-avatar-detail"><img src="data:image/svg+xml;utf8,%3Csvg%20width%3D%22140%22%20height%3D%22140%22%20viewBox%3D%220%200%20140%20140%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%20%20%3Ccircle%20cx%3D%2270%22%20cy%3D%2270%22%20r%3D%2270%22%20fill%3D%22%2310B981%22%2F%3E%0A%20%20%20%20%20%20%3Ctext%20x%3D%2270%22%20y%3D%2295%22%20font-size%3D%2260%22%20font-family%3D%22Arial%22%20fill%3D%22white%22%20text-anchor%3D%22middle%22%3E%E5%85%B3%3C%2Ftext%3E%0A%20%20%20%20%3C%2Fsvg%3E" alt="关天知"></div>
+      <div class="team-name-detail">关天知</div>
+      <div class="team-role-detail">施工技术</div>
+      <div class="team-desc-detail">现场工艺把关</div>
+    </div></div><div class="contact-section"><h3>联系我们</h3><p>180-3025-1013<br>上海市嘉定区金沙江西路1069弄5号楼907</p></div></div><footer><p>© 2025 艺展天下会展服务有限公司 版权所有   上海市嘉定区金沙江西路1069弄5号写字楼907</p></footer></body></html>
