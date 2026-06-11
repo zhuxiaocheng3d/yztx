@@ -4,7 +4,7 @@ const path = require('path');
 
 // ==================== 配置 ====================
 const SITE_TITLE = '艺展天下';
-const COPYRIGHT = `© 2025 艺展天下会展服务有限公司 版权所有`;
+const COPYRIGHT = `© 2025 艺展天下会展服务有限公司 版权所有  上海市嘉定区金沙江西路1069弄5号写字楼907`;
 const LOGO_IMG = '艺展天下icon.png';
 const FAVICON = 'favicon.ico';
 
