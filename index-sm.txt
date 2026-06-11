@@ -8,7 +8,6 @@ We have direct factories in major cities across the country and can provide on-s
 
 
 【案例】
-Our Work
 “自动加载根目录下的case文件夹和子文件夹里的所有图片和视频，4比3的比例展示，铺满屏幕根据页面宽度动态调整每行展示数量，每个图片都能超链接到对应文件夹里的各自的html案例页，”
 [keys]
 
