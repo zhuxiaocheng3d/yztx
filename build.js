@@ -1,4 +1,4 @@
-// build.js - 最终版（纯白横幅 + 案例排序 + Creative elements + 手机设备检测两列布局）
+// build.js - 非破坏性构建（保留已存在的CSS文件）
 const fs = require('fs');
 const path = require('path');
 
@@ -41,7 +41,6 @@ function getMediaFiles(dirPath) {
   return mediaFiles;
 }
 
-// 获取所有案例文件夹，并根据名称中的 (数字) 排序
 function getCaseFolders() {
   if (!fs.existsSync(CASE_DIR)) return [];
   const items = fs.readdirSync(CASE_DIR);
@@ -232,8 +231,9 @@ function getFooter() {
   return `<footer><p>${COPYRIGHT}</p></footer>`;
 }
 
-function getGlobalStyle() {
-  return `/* 艺展天下 - 纯白扁平风格 + 白色横幅 */
+// 注意：以下两个函数仅用于首次生成默认样式，后续构建不会再覆盖
+function getDefaultStyle() {
+  return `/* 艺展天下 - 默认样式（您可以自由修改此文件，不会被构建覆盖） */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1a1a1a; line-height: 1.5; }
 .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
@@ -250,13 +250,13 @@ nav a.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; bac
 .banner-small-text { font-size: 0.75rem; color: #666; max-width: 800px; margin: 0 auto; line-height: 1.6; }
 .section { padding: 64px 0; }
 .section-title { font-size: 2rem; font-weight: 600; margin-bottom: 48px; text-align: center; color: #111; }
-.case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 32px; }
-.case-card { background-color: #ffffff; text-decoration: none; color: inherit; display: block; transition: transform 0.3s ease, box-shadow 0.3s ease; border-radius: 8px; overflow: hidden; }
+.case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 48px 32px; }
+.case-card { background-color: #ffffff; text-decoration: none; color: inherit; display: block; transition: transform 0.3s ease, box-shadow 0.3s ease; border-radius: 0; overflow: visible; }
 .case-card:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.1); z-index: 1; }
-.case-thumb { aspect-ratio: 4 / 3; width: 100%; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center; overflow: visible; }
-.case-thumb img, .case-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.case-info { padding: 20px 0 0 0; }
-.case-title { font-size: 1.2rem; font-weight: 500; color: #222; transition: color 0.2s; }
+.case-thumb { aspect-ratio: 4 / 3; width: 100%; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.case-thumb img, .case-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 0; }
+.case-info { padding: 4px 0 0 0; }
+.case-title { font-size: 1.2rem; font-weight: 500; color: #222; margin: 0; }
 .case-card:hover .case-title { color: #000; }
 .team-home { text-align: center; max-width: 700px; margin: 0 auto; }
 .team-desc-home { font-size: 1rem; color: #555; margin-bottom: 24px; }
@@ -272,19 +272,19 @@ footer { text-align: center; padding: 32px 24px; background-color: #fafafa; colo
   .logo img { height: 36px; }
   .banner-chinese { font-size: 1.8rem; }
   .banner-english-medium { font-size: 1.2rem; }
+  .case-grid { gap: 32px 16px; }
 }
 @media (max-width: 480px) {
-  .case-grid { grid-template-columns: 1fr; }
+  .case-grid { grid-template-columns: 1fr; gap: 32px; }
 }`;
 }
 
-// 手机专用 CSS（强制两列）
-function generateMobileStyle() {
-  return `/* 手机设备专用样式 - 案例网格两列布局 */
+function getDefaultMobileStyle() {
+  return `/* 手机设备专用样式 - 默认（可自由修改，不会被构建覆盖） */
 @media (max-width: 768px) {
   .case-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    gap: 32px 12px !important;
   }
   .case-title {
     font-size: 0.85rem !important;
@@ -294,6 +294,9 @@ function generateMobileStyle() {
   }
   .container {
     padding: 0 12px !important;
+  }
+  .case-info {
+    padding-top: 4px !important;
   }
 }`;
 }
@@ -326,7 +329,6 @@ function generateHomePage(casesData) {
   const teamDesc = parseTeamDescFromIndexSm() || '全球展览搭建服务商，专注展览十余年，联系我们，获得专属免费设计首稿和报价。';
   const teamHtml = `<div class="team-home"><div class="team-desc-home">${escapeHtml(teamDesc)}</div><a href="/team/" class="btn-contact">联系我们 →</a></div>`;
 
-  // 设备检测脚本（基于用户代理 + 触摸屏）
   const deviceCheckScript = `<script>
 (function() {
   function isMobileDevice() {
@@ -357,7 +359,7 @@ function generateHomePage(casesData) {
 <body>${getHeader('home')}${bannerHtml}<main><section id="cases" class="section"><div class="container"><h2 class="section-title">Our Work</h2><div class="case-grid">${casesHtml || '<p style="text-align:center; width:100%;">暂无案例，请添加 case 目录下的子文件夹及媒体文件</p>'}</div></div></section><section id="team" class="section" style="background-color: #ffffff;"><div class="container"><h2 class="section-title">About Team</h2>${teamHtml}</div></section></main>${getFooter()}</body></html>`;
 }
 
-// ========== 案例详情页生成函数（保持不变，但确保引用正确）==========
+// ========== 案例详情页生成函数（保持不变）==========
 function formatFileSize(bytes) {
   if (bytes === 0) return '0 B';
   const k = 1024;
@@ -683,22 +685,30 @@ async function build() {
   fs.writeFileSync(path.join(TEAM_DIR, 'index.html'), teamHtml);
   console.log(`👥 生成团队页面 team/index.html (基于 team/index-sm.txt)`);
   
-  fs.writeFileSync(OUTPUT_STYLE, getGlobalStyle());
-  console.log(`🎨 生成样式文件 style.css`);
+  // 只在 CSS 文件不存在时创建默认样式，避免覆盖用户修改
+  if (!fs.existsSync(OUTPUT_STYLE)) {
+    fs.writeFileSync(OUTPUT_STYLE, getDefaultStyle());
+    console.log(`🎨 创建默认样式文件 style.css (可自由修改，不会被覆盖)`);
+  } else {
+    console.log(`✅ 已存在 style.css，保留您的自定义样式`);
+  }
   
-  // 生成手机专用样式
-  fs.writeFileSync(OUTPUT_MOBILE_STYLE, generateMobileStyle());
-  console.log(`📱 生成手机专用样式 index-shouji.css`);
+  if (!fs.existsSync(OUTPUT_MOBILE_STYLE)) {
+    fs.writeFileSync(OUTPUT_MOBILE_STYLE, getDefaultMobileStyle());
+    console.log(`📱 创建默认手机样式文件 index-shouji.css (可自由修改，不会被覆盖)`);
+  } else {
+    console.log(`✅ 已存在 index-shouji.css，保留您的自定义样式`);
+  }
   
   console.log('\n✅ 构建完成！');
   console.log('📂 目录结构:');
-  console.log('   ├── index.html (首页 - 白色横幅 + 案例排序 + 设备检测)');
-  console.log('   ├── style.css');
-  console.log('   ├── index-shouji.css (手机专用两列布局)');
+  console.log('   ├── index.html (首页)');
+  console.log('   ├── style.css (可手动修改，构建时保留)');
+  console.log('   ├── index-shouji.css (可手动修改，构建时保留)');
   console.log('   ├── 艺展天下icon.png');
   console.log('   ├── favicon.ico');
-  console.log('   ├── case/ (案例子目录，支持 (数字) 排序)');
-  console.log('   ├── team/index.html (团队详情页)');
+  console.log('   ├── case/ (案例子目录)');
+  console.log('   ├── team/index.html');
   console.log('   └── index-sm.txt, team/index-sm.txt');
   console.log('\n🌐 可直接部署到任意静态服务器');
 }

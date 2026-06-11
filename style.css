@@ -1,4 +1,4 @@
-/* 艺展天下 - 纯白扁平风格 + 白色横幅 */
+/* 艺展天下 - 纯白扁平风格 + 直角卡片 + 紧贴文字 + 加大行距 */
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #1a1a1a; line-height: 1.5; }
 .container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
@@ -9,25 +9,67 @@ nav { display: flex; gap: 32px; }
 nav a { text-decoration: none; color: #555; font-weight: 500; font-size: 1rem; padding: 6px 12px; border-radius: 30px; transition: background-color 0.2s, color 0.2s; }
 nav a:hover { background-color: #f0f0f0; color: #000; }
 nav a.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; background-color: transparent; }
+/* 文字横幅样式（纯白背景） */
 .text-banner { background-color: #ffffff; padding: 60px 24px; text-align: center; }
 .banner-chinese { font-size: 2.5rem; font-weight: 700; color: #111; margin-bottom: 16px; letter-spacing: 2px; }
 .banner-english-medium { font-size: 1.5rem; font-weight: 500; color: #333; margin-bottom: 24px; }
 .banner-small-text { font-size: 0.75rem; color: #666; max-width: 800px; margin: 0 auto; line-height: 1.6; }
 .section { padding: 64px 0; }
 .section-title { font-size: 2rem; font-weight: 600; margin-bottom: 48px; text-align: center; color: #111; }
-.case-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 32px; }
-.case-card { background-color: #ffffff; text-decoration: none; color: inherit; display: block; transition: transform 0.3s ease, box-shadow 0.3s ease; border-radius: 8px; overflow: hidden; }
-.case-card:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.1); z-index: 1; }
-.case-thumb { aspect-ratio: 4 / 3; width: 100%; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center; overflow: visible; }
-.case-thumb img, .case-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.case-info { padding: 20px 0 0 0; }
-.case-title { font-size: 1.2rem; font-weight: 500; color: #222; transition: color 0.2s; }
+/* 网格布局：增大行间距，列间距保持32px */
+.case-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+  gap: 48px 32px;  /* 行间距48px，列间距32px */
+}
+.case-card {
+  background-color: #ffffff;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0;       /* 完全无圆角 */
+  overflow: visible;
+}
+.case-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  z-index: 1;
+}
+.case-thumb {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;  /* 确保图片不溢出，但无圆角 */
+}
+.case-thumb img, .case-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0;   /* 图片无圆角 */
+}
+/* 文字与图片紧贴：去掉上内边距，改为紧贴图片底部 */
+.case-info { 
+  padding: 4px 0 0 0;   /* 极小的上间距，形成紧贴效果 */
+}
+.case-title { 
+  font-size: 1.2rem; 
+  font-weight: 500; 
+  color: #222; 
+  transition: color 0.2s; 
+  margin: 0;            /* 去除默认边距 */
+}
 .case-card:hover .case-title { color: #000; }
 .team-home { text-align: center; max-width: 700px; margin: 0 auto; }
 .team-desc-home { font-size: 1rem; color: #555; margin-bottom: 24px; }
 .btn-contact { display: inline-block; background: #000; color: #fff; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 500; transition: background 0.2s; }
 .btn-contact:hover { background: #333; }
 footer { text-align: center; padding: 32px 24px; background-color: #fafafa; color: #888; font-size: 0.85rem; }
+
 @media (max-width: 768px) {
   .container { padding: 0 16px; }
   .section { padding: 48px 0; }
@@ -37,7 +79,14 @@ footer { text-align: center; padding: 32px 24px; background-color: #fafafa; colo
   .logo img { height: 36px; }
   .banner-chinese { font-size: 1.8rem; }
   .banner-english-medium { font-size: 1.2rem; }
+  /* 手机端行间距适当减小但仍比原来的大 */
+  .case-grid {
+    gap: 32px 16px;
+  }
+  .case-info {
+    padding-top: 4px;
+  }
 }
 @media (max-width: 480px) {
-  .case-grid { grid-template-columns: 1fr; }
+  .case-grid { grid-template-columns: 1fr; gap: 32px; }
 }

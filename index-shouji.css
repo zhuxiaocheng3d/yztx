@@ -1,8 +1,8 @@
-/* 手机设备专用样式 - 案例网格两列布局 */
+/* 手机设备专用样式 - 两列布局 + 直角 + 紧贴文字 + 加大行距 */
 @media (max-width: 768px) {
   .case-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    gap: 32px 12px !important;   /* 行距32px，列距12px */
   }
   .case-title {
     font-size: 0.85rem !important;
@@ -12,5 +12,11 @@
   }
   .container {
     padding: 0 12px !important;
+  }
+  .case-info {
+    padding-top: 4px !important;
+  }
+  .case-thumb img, .case-thumb video {
+    border-radius: 0 !important;
   }
 }
