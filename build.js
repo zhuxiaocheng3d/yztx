@@ -6,7 +6,7 @@ const path = require('path');
 const SITE_TITLE = '艺展天下';
 const COPYRIGHT = `© 2025 艺展天下会展服务有限公司 版权所有  上海市嘉定区金沙江西路1069弄5号写字楼907`;
 const LOGO_IMG = '艺展天下icon.png';          // 默认Logo文件名（根目录）
-const CUSTOM_LOGO_FILENAME = '艺展天下icon2.png'; // 案例目录下可放置的自定义Logo文件名
+const CUSTOM_LOGO_FILENAME = '艺展天下icon2.png'; // 案例目录下可放置的自定义Logo文件名（该文件不会出现在Creative elements区域）
 const FAVICON = 'favicon.ico';
 
 const ROOT_DIR = __dirname;
@@ -37,6 +37,8 @@ function getMediaFiles(dirPath) {
     const fullPath = path.join(dirPath, file);
     const stat = fs.statSync(fullPath);
     if (stat.isFile() && (isImageFile(file) || isVideoFile(file))) {
+      // 过滤掉用于自定义Logo的文件，避免出现在Creative elements区域
+      if (file === CUSTOM_LOGO_FILENAME) continue;
       mediaFiles.push(file);
     }
   }
@@ -426,7 +428,7 @@ function getDefaultMobileStyle() {
 }`;
 }
 
-// 确保 neirong-css.css 包含移动端三列图片样式及Lightbox基础样式
+// 确保 neirong-css.css 包含移动端三列图片布局及Lightbox基础样式
 function ensureDetailCssMobileThreeCols() {
   if (!fs.existsSync(OUTPUT_DETAIL_CSS)) return;
   let css = fs.readFileSync(OUTPUT_DETAIL_CSS, 'utf-8');
@@ -532,9 +534,35 @@ function generateHomePage(casesData) {
 })();
 <\/script>`;
 
+  // 内联样式：减小banner上下内边距、减小案例区域上边距
+  const spacingStyle = `<style>
+  /* 调整首页Banner和案例区域间距，使布局更紧凑 */
+  .text-banner {
+    padding: 24px 24px 20px !important;
+  }
+  .section {
+    padding-top: 20px !important;
+    padding-bottom: 48px !important;
+  }
+  .case-grid {
+    margin-top: -20px !important;
+  }
+  @media (max-width: 768px) {
+    .text-banner {
+      padding: 16px 16px 12px !important;
+    }
+    .section {
+      padding-top: 12px !important;
+    }
+    .case-grid {
+      margin-top: -12px !important;
+    }
+  }
+  </style>`;
+
   return `<!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>艺展天下 | 专业会展服务</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}">${deviceCheckScript}</head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>艺展天下 | 专业会展服务</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}">${deviceCheckScript}${spacingStyle}</head>
 <body>${getHeader('home', null)}${bannerHtml}<main><section id="cases" class="section"><div class="container"><div class="case-grid">${casesHtml || '<p style="text-align:center; width:100%;">暂无案例，请添加 case 目录下的子文件夹及媒体文件</p>'}</div></div></section><section id="team" class="section" style="background-color: transparent;"><div class="container"><h2 class="section-title">About Team</h2>${teamHtml}</div></section></main>${getFooter()}</body></html>`;
 }
 
@@ -734,7 +762,10 @@ function renderRemainingFilesArea(filesNotInShowcase) {
 }
 
 function renderRemainingMediaGrid(filesNotInShowcase) {
-  const media = filesNotInShowcase.filter(f => f.type === 'image' || f.type === 'video');
+  // 过滤掉自定义Logo文件，防止出现在Creative elements区域
+  const media = filesNotInShowcase.filter(f => 
+    (f.type === 'image' || f.type === 'video') && f.name !== CUSTOM_LOGO_FILENAME
+  );
   if (media.length === 0) return '';
   let html = `<div class="media-grid-container"><h3>Creative elements</h3><div class="media-grid" id="creativeGrid">`;
   for (const file of media) {
@@ -830,7 +861,9 @@ function generateCasePageFromSm(folderName, folderPath, filesInFolder) {
 }
 
 function generateSimpleCasePage(folderName, mediaFiles, descText) {
-  const mediaHtml = mediaFiles.map(file => {
+  // 过滤掉自定义Logo文件
+  const filteredMedia = mediaFiles.filter(file => file !== CUSTOM_LOGO_FILENAME);
+  const mediaHtml = filteredMedia.map(file => {
     const filePath = `./${file}`;
     const isVideo = isVideoFile(file);
     return `<div class="media-item">${isVideo ? `<video src="${filePath}" controls poster="${filePath}"></video>` : `<img src="${filePath}" alt="${file}" loading="lazy">`}</div>`;
@@ -926,7 +959,7 @@ async function build() {
   
   const homeHtml = generateHomePage(casesData);
   fs.writeFileSync(path.join(ROOT_DIR, 'index.html'), homeHtml);
-  console.log(`\n🏠 生成首页 index.html (${casesData.length} 个案例) - 已移除 'Our Work' 标题`);
+  console.log(`\n🏠 生成首页 index.html (${casesData.length} 个案例) - 已移除 'Our Work' 标题，并优化了间距`);
   
   const teamHtml = generateTeamPageFromSm();
   fs.writeFileSync(path.join(TEAM_DIR, 'index.html'), teamHtml);
@@ -954,7 +987,7 @@ async function build() {
   console.log('   ├── neirong-css.css (已添加手机三列图片及Lightbox样式)');
   console.log('   ├── 艺展天下icon.png');
   console.log('   ├── favicon.ico');
-  console.log('   ├── case/ (案例子目录，支持自定义 艺展天下icon2.png 切换Logo)');
+  console.log('   ├── case/ (案例子目录，支持自定义 艺展天下icon2.png 切换Logo，该文件不会出现在Creative elements区域)');
   console.log('   ├── team/index.html');
   console.log('   └── index-sm.txt, team/index-sm.txt');
   console.log('\n🌐 可直接部署到任意静态服务器');

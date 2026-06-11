@@ -22,7 +22,30 @@
     document.documentElement.classList.add('mobile-device');
   }
 })();
-</script></head>
+</script><style>
+  /* 调整首页Banner和案例区域间距，使布局更紧凑 */
+  .text-banner {
+    padding: 24px 24px 20px !important;
+  }
+  .section {
+    padding-top: 20px !important;
+    padding-bottom: 48px !important;
+  }
+  .case-grid {
+    margin-top: -20px !important;
+  }
+  @media (max-width: 768px) {
+    .text-banner {
+      padding: 16px 16px 12px !important;
+    }
+    .section {
+      padding-top: 12px !important;
+    }
+    .case-grid {
+      margin-top: -12px !important;
+    }
+  }
+  </style></head>
 <body><header>
   <div class="logo"><a href="/"><img src="/艺展天下icon.png" alt="艺展天下"></a></div>
   <nav>
