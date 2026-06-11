@@ -1,10 +1,10 @@
-// build.js - 最终版（纯白横幅 + 案例排序 + Creative elements）
+// build.js - 最终版（纯白横幅 + 案例排序 + Creative elements + 手机设备检测两列布局）
 const fs = require('fs');
 const path = require('path');
 
 // ==================== 配置 ====================
 const SITE_TITLE = '艺展天下';
-const COPYRIGHT = `© 2025 艺展天下会展服务有限公司 版权所有   上海市嘉定区金沙江西路1069弄5号写字楼907`;
+const COPYRIGHT = `© 2025 艺展天下会展服务有限公司 版权所有`;
 const LOGO_IMG = '艺展天下icon.png';
 const FAVICON = 'favicon.ico';
 
@@ -12,6 +12,7 @@ const ROOT_DIR = __dirname;
 const CASE_DIR = path.join(ROOT_DIR, 'case');
 const TEAM_DIR = path.join(ROOT_DIR, 'team');
 const OUTPUT_STYLE = path.join(ROOT_DIR, 'style.css');
+const OUTPUT_MOBILE_STYLE = path.join(ROOT_DIR, 'index-shouji.css');
 
 const IMG_EXT = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
 const VIDEO_EXT = ['.mp4', '.webm', '.ogg', '.mov'];
@@ -51,7 +52,6 @@ function getCaseFolders() {
       folders.push(item);
     }
   }
-  // 排序：提取括号中的数字，没有数字的排最后
   folders.sort((a, b) => {
     const numA = extractSortNumber(a);
     const numB = extractSortNumber(b);
@@ -63,38 +63,29 @@ function getCaseFolders() {
   return folders;
 }
 
-// 提取文件夹名中的 (数字)，返回数字或 null
 function extractSortNumber(folderName) {
   const match = folderName.match(/\((\d+)\)/);
   if (match) return parseInt(match[1], 10);
   return null;
 }
 
-// 去除文件夹名中的排序标记（包括括号数字），用于显示标题
 function cleanFolderTitle(folderName) {
   return folderName.replace(/\(\d+\)/g, '').trim();
 }
 
-// 获取封面文件：优先查找与“清理后”文件夹同名的文件（不区分扩展名）
 function getCaseCover(caseFolderName) {
   const casePath = path.join(CASE_DIR, caseFolderName);
   const mediaFiles = getMediaFiles(casePath);
   if (mediaFiles.length === 0) return null;
-
   const cleanName = cleanFolderTitle(caseFolderName);
   const lowerCleanName = cleanName.toLowerCase();
-  // 1. 优先查找与清理后名称同名的文件
   const sameNameFile = mediaFiles.find(file => {
     const baseName = path.basename(file, path.extname(file)).toLowerCase();
     return baseName === lowerCleanName;
   });
   if (sameNameFile) return sameNameFile;
-
-  // 2. 其次查找任意图片文件
   const imgFile = mediaFiles.find(f => isImageFile(f));
   if (imgFile) return imgFile;
-
-  // 3. 最后返回第一个媒体文件
   return mediaFiles[0];
 }
 
@@ -103,7 +94,6 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-// ========== 解析 index-sm.txt 中的横幅内容 ==========
 function parseBannerFromIndexSm() {
   const indexPath = path.join(ROOT_DIR, 'index-sm.txt');
   if (!fs.existsSync(indexPath)) return null;
@@ -117,9 +107,7 @@ function parseBannerFromIndexSm() {
   const englishSub = lines[1] || '';
   const restLines = lines.slice(2);
   let smallText = '';
-  if (restLines.length > 0) {
-    smallText = restLines.join(' ');
-  }
+  if (restLines.length > 0) smallText = restLines.join(' ');
   return { chineseTitle, englishSub, smallText };
 }
 
@@ -133,7 +121,6 @@ function parseTeamDescFromIndexSm() {
   return descLine || '全球展览搭建服务商，专注展览十余年，联系我们，获得专属免费设计首稿和报价。';
 }
 
-// ========== 解析 team-index-sm.txt 生成团队详情页 ==========
 function parseTeamDetailFromSm() {
   const teamSmPath = path.join(TEAM_DIR, 'index-sm.txt');
   if (!fs.existsSync(teamSmPath)) return null;
@@ -184,9 +171,7 @@ function parseTeamDetailFromSm() {
 
 function generateTeamPageFromSm() {
   const teamData = parseTeamDetailFromSm();
-  if (!teamData) {
-    return generateDefaultTeamPage();
-  }
+  if (!teamData) return generateDefaultTeamPage();
   const { title, subTitle, members, contact } = teamData;
   const membersHtml = members.map((m, idx) => {
     const initial = m.name.charAt(0);
@@ -259,7 +244,6 @@ nav { display: flex; gap: 32px; }
 nav a { text-decoration: none; color: #555; font-weight: 500; font-size: 1rem; padding: 6px 12px; border-radius: 30px; transition: background-color 0.2s, color 0.2s; }
 nav a:hover { background-color: #f0f0f0; color: #000; }
 nav a.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; background-color: transparent; }
-/* 文字横幅样式（纯白背景） */
 .text-banner { background-color: #ffffff; padding: 60px 24px; text-align: center; }
 .banner-chinese { font-size: 2.5rem; font-weight: 700; color: #111; margin-bottom: 16px; letter-spacing: 2px; }
 .banner-english-medium { font-size: 1.5rem; font-weight: 500; color: #333; margin-bottom: 24px; }
@@ -294,7 +278,26 @@ footer { text-align: center; padding: 32px 24px; background-color: #fafafa; colo
 }`;
 }
 
-// 首页生成（使用文字横幅 + 英文区块标题 + 团队描述）
+// 手机专用 CSS（强制两列）
+function generateMobileStyle() {
+  return `/* 手机设备专用样式 - 案例网格两列布局 */
+@media (max-width: 768px) {
+  .case-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .case-title {
+    font-size: 0.85rem !important;
+  }
+  .section {
+    padding: 32px 0 !important;
+  }
+  .container {
+    padding: 0 12px !important;
+  }
+}`;
+}
+
 function generateHomePage(casesData) {
   const casesHtml = casesData.map(c => {
     let coverHtml = '';
@@ -323,13 +326,38 @@ function generateHomePage(casesData) {
   const teamDesc = parseTeamDescFromIndexSm() || '全球展览搭建服务商，专注展览十余年，联系我们，获得专属免费设计首稿和报价。';
   const teamHtml = `<div class="team-home"><div class="team-desc-home">${escapeHtml(teamDesc)}</div><a href="/team/" class="btn-contact">联系我们 →</a></div>`;
 
+  // 设备检测脚本（基于用户代理 + 触摸屏）
+  const deviceCheckScript = `<script>
+(function() {
+  function isMobileDevice() {
+    var ua = navigator.userAgent.toLowerCase();
+    var mobileKeywords = ['android', 'webos', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 'mobile', 'opera mini', 'iemobile', 'tablet'];
+    var isMobileUA = mobileKeywords.some(function(keyword) { return ua.indexOf(keyword) !== -1; });
+    var platform = navigator.platform.toLowerCase();
+    var mobilePlatforms = ['iphone', 'ipad', 'ipod', 'android'];
+    var isMobilePlatform = mobilePlatforms.some(function(p) { return platform.indexOf(p) !== -1; });
+    var hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isMobileUA || isMobilePlatform) return true;
+    if (hasTouch && window.innerWidth <= 768) return true;
+    return false;
+  }
+  if (isMobileDevice()) {
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/index-shouji.css';
+    document.head.appendChild(link);
+    document.documentElement.classList.add('mobile-device');
+  }
+})();
+<\/script>`;
+
   return `<!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>艺展天下 | 专业会展服务</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"><title>艺展天下 | 专业会展服务</title><link rel="stylesheet" href="/style.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}">${deviceCheckScript}</head>
 <body>${getHeader('home')}${bannerHtml}<main><section id="cases" class="section"><div class="container"><h2 class="section-title">Our Work</h2><div class="case-grid">${casesHtml || '<p style="text-align:center; width:100%;">暂无案例，请添加 case 目录下的子文件夹及媒体文件</p>'}</div></div></section><section id="team" class="section" style="background-color: #ffffff;"><div class="container"><h2 class="section-title">About Team</h2>${teamHtml}</div></section></main>${getFooter()}</body></html>`;
 }
 
-// ========== 以下为案例详情页生成函数 ==========
+// ========== 案例详情页生成函数（保持不变，但确保引用正确）==========
 function formatFileSize(bytes) {
   if (bytes === 0) return '0 B';
   const k = 1024;
@@ -525,7 +553,6 @@ function renderRemainingFilesArea(filesNotInShowcase) {
   return html;
 }
 
-// 修改：将“贴图/参考图”改为“Creative elements”
 function renderRemainingMediaGrid(filesNotInShowcase) {
   const media = filesNotInShowcase.filter(f => f.type === 'image' || f.type === 'video');
   if (media.length === 0) return '';
@@ -544,7 +571,7 @@ function generateCasePageFromSm(folderName, folderPath, filesInFolder) {
   const smPath = path.join(folderPath, 'index-sm.txt');
   let smContent = '';
   try { smContent = fs.readFileSync(smPath, 'utf-8'); } catch (err) { return null; }
-  let pageTitle = cleanFolderTitle(folderName);  // 使用清理后的标题
+  let pageTitle = cleanFolderTitle(folderName);
   const titleMatch = smContent.match(/【标题】\s*\n([^\n]+)/);
   if (titleMatch) pageTitle = titleMatch[1].trim();
   const showcaseRows = parseShowcaseLayout(smContent, filesInFolder);
@@ -568,12 +595,11 @@ function generateSimpleCasePage(folderName, mediaFiles, descText) {
     const isVideo = isVideoFile(file);
     return `<div class="media-item">${isVideo ? `<video src="${filePath}" controls poster="${filePath}"></video>` : `<img src="${filePath}" alt="${file}" loading="lazy">`}</div>`;
   }).join('');
-  const title = cleanFolderTitle(folderName);  // 使用清理后的标题
+  const title = cleanFolderTitle(folderName);
   return `<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title} | 艺展天下案例</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/neirong-css.css"><link rel="icon" type="image/x-icon" href="/${FAVICON}"></head><body>${getHeader('case')}<div class="case-detail"><h1 style="text-align:center;">${title}</h1>${descText ? `<p style="margin-bottom:24px;color:#555;">${descText}</p>` : ''}<div class="case-media-grid">${mediaHtml || '<p>暂无媒体文件</p>'}</div><a href="/" class="back-link">← 返回首页</a></div>${getFooter()}</body></html>`;
 }
 
-// ========== 示例生成辅助 ==========
 function createSampleCaseIfNeeded() {
   const caseFolders = getCaseFolders();
   if (caseFolders.length === 0) {
@@ -627,7 +653,7 @@ async function build() {
   createSampleCaseIfNeeded();
   createSampleTeamSmIfNeeded();
   
-  const caseFolders = getCaseFolders();  // 已排序
+  const caseFolders = getCaseFolders();
   const casesData = [];
   for (const folder of caseFolders) {
     const casePath = path.join(CASE_DIR, folder);
@@ -645,7 +671,7 @@ async function build() {
       console.log(`  📄 生成案例页(基于sm): case/${folder}/index.html`);
     }
     fs.writeFileSync(path.join(casePath, 'index.html'), caseHtml);
-    const title = cleanFolderTitle(folder);  // 显示时去掉排序标记
+    const title = cleanFolderTitle(folder);
     casesData.push({ folderName: folder, title: title, coverFile: coverFile });
   }
   
@@ -660,10 +686,15 @@ async function build() {
   fs.writeFileSync(OUTPUT_STYLE, getGlobalStyle());
   console.log(`🎨 生成样式文件 style.css`);
   
+  // 生成手机专用样式
+  fs.writeFileSync(OUTPUT_MOBILE_STYLE, generateMobileStyle());
+  console.log(`📱 生成手机专用样式 index-shouji.css`);
+  
   console.log('\n✅ 构建完成！');
   console.log('📂 目录结构:');
-  console.log('   ├── index.html (首页 - 白色横幅 + 案例排序)');
+  console.log('   ├── index.html (首页 - 白色横幅 + 案例排序 + 设备检测)');
   console.log('   ├── style.css');
+  console.log('   ├── index-shouji.css (手机专用两列布局)');
   console.log('   ├── 艺展天下icon.png');
   console.log('   ├── favicon.ico');
   console.log('   ├── case/ (案例子目录，支持 (数字) 排序)');

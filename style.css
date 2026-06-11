@@ -9,7 +9,6 @@ nav { display: flex; gap: 32px; }
 nav a { text-decoration: none; color: #555; font-weight: 500; font-size: 1rem; padding: 6px 12px; border-radius: 30px; transition: background-color 0.2s, color 0.2s; }
 nav a:hover { background-color: #f0f0f0; color: #000; }
 nav a.active { color: #000; border-bottom: 2px solid #000; border-radius: 0; background-color: transparent; }
-/* 文字横幅样式（纯白背景） */
 .text-banner { background-color: #ffffff; padding: 60px 24px; text-align: center; }
 .banner-chinese { font-size: 2.5rem; font-weight: 700; color: #111; margin-bottom: 16px; letter-spacing: 2px; }
 .banner-english-medium { font-size: 1.5rem; font-weight: 500; color: #333; margin-bottom: 24px; }
